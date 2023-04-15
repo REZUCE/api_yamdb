@@ -81,3 +81,4 @@ class Title(models.Model):
     def __str__(self):
         """Возвращает название произведения."""
         return self.name
+
