@@ -1,84 +1,99 @@
 from django.db import models
-from user.models import User
+from reviews.validators import validate_title_year
+
+from users.models import User
 
 
 class Category(models.Model):
-    """Модель Категорий"""
+    """Модель категории."""
 
     name = models.CharField(
         max_length=256,
-        unique=True,
-        verbose_name='Название категории',
+        verbose_name='Название',
+        help_text='Необходимо названия котегории',
     )
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        verbose_name='Псевдоним категории',
+        verbose_name='Индификатор',
+        help_text='Необходим индификатор категории',
     )
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        """Возвращает slug категории."""
-        return self.slug
+        return self.name
 
 
 class Genre(models.Model):
-    """Модель Жанра"""
+    """Модель жанра."""
 
     name = models.CharField(
         max_length=256,
-        verbose_name='Название жанра',
+        verbose_name='Название',
+        help_text='Необходимо названия жанра',
     )
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        verbose_name='Псевдоним жанра',
+        verbose_name='Идентификатор',
+        help_text='Необходим индификатор жанра',
     )
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
 
     def __str__(self):
-        """Возвращает slug жанра."""
-        return self.slug
+        return self.name
 
 
 class Title(models.Model):
-    """Модель Произведения"""
+    """Модель тайтла."""
 
     name = models.CharField(
         max_length=256,
-        verbose_name='Название произведения',
+        verbose_name='Название',
+        help_text='Необходимо названия произведения',
     )
-    year = models.PositiveSmallIntegerField(
-        verbose_name='Год выпуска',
-    )
+
     description = models.TextField(
-        verbose_name='Описание произведения',
         null=True,
         blank=True,
+        verbose_name='Описание',
+        help_text='Необходимо описание',
     )
-    genre = models.ManyToManyField(
-        Genre,
-        through='GenreTitle',
+
+    year = models.IntegerField(
+        verbose_name='Дата выхода',
+        help_text='Укажите дату выхода',
+        validators=(validate_title_year,),
     )
+
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
-        verbose_name='Категория произведения',
         null=True,
-        blank=True,
+        related_name='titles',
+        verbose_name='Категория',
+        help_text='Укажите категорию',
+    )
+
+    genre = models.ManyToManyField(
+        Genre,
+        through='GenreTitle',
+        verbose_name='Жанр',
+        help_text='Укажите жанр',
     )
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-        default_related_name = 'titles'
 
     def __str__(self):
-        """Возвращает название произведения."""
         return self.name
