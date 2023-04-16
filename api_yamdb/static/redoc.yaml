@@ -807,7 +807,7 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/User'
+                      $ref: '#/components/schemas/user'
         401:
           description: Необходим JWT-токен
       security:
@@ -825,14 +825,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/user'
       responses:
         201:
           description: Удачное выполнение запроса
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/user'
         400:
           description: 'Отсутствует обязательное поле или оно некорректно'
           content:
@@ -867,7 +867,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/user'
         401:
           description: Необходим JWT-токен
         403:
@@ -889,14 +889,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/user'
       responses:
         200:
           description: Удачное выполнение запроса
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/user'
         400:
           description: 'Отсутствует обязательное поле или оно некорректно'
           content:
@@ -946,7 +946,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/user'
       security:
       - jwt-token:
         - read:admin,moderator,user
@@ -969,7 +969,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/user'
         400:
           description: 'Отсутствует обязательное поле или оно некорректно'
           content:

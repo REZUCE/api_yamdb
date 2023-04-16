@@ -1,4 +1,5 @@
 from django.db import models
+from user.models import User
 
 
 class Category(models.Model):
@@ -81,4 +82,3 @@ class Title(models.Model):
     def __str__(self):
         """Возвращает название произведения."""
         return self.name
-
