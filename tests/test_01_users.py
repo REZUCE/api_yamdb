@@ -27,8 +27,8 @@ class Test01UserAPI:
         )
     ]
     PATCH_DATA = {
-        'first_name': 'New User Firstname',
-        'last_name': 'New User Lastname',
+        'first_name': 'New user Firstname',
+        'last_name': 'New user Lastname',
         'bio': 'new user bio'
     }
 

@@ -1,7 +1,7 @@
 from django.db import models
 from reviews.validators import validate_title_year
 
-from users.models import User
+from user.models import User
 
 
 class Category(models.Model):
@@ -97,3 +97,20 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class GenreTitle(models.Model):
+    genre = models.ForeignKey(
+        Genre,
+        verbose_name='Жанр',
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    title = models.ForeignKey(
+        Title,
+        verbose_name='Тайтл',
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return f'{self.genre}-{self.title}'
