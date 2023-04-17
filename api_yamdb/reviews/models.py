@@ -9,6 +9,7 @@ class Category(models.Model):
 
     name = models.CharField(
         max_length=256,
+        unique=True,
         verbose_name='Название',
         help_text='Необходимо названия котегории',
     )
@@ -33,7 +34,7 @@ class Genre(models.Model):
 
     name = models.CharField(
         max_length=256,
-        verbose_name='Название',
+        verbose_name='Название жанра',
         help_text='Необходимо названия жанра',
     )
     slug = models.SlugField(
@@ -68,7 +69,7 @@ class Title(models.Model):
         help_text='Необходимо описание',
     )
 
-    year = models.IntegerField(
+    year = models.PositiveIntegerField(
         verbose_name='Дата выхода',
         help_text='Укажите дату выхода',
         validators=(validate_title_year,),
@@ -78,7 +79,7 @@ class Title(models.Model):
         Category,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='titles',
+        blank=True,
         verbose_name='Категория',
         help_text='Укажите категорию',
     )
@@ -101,6 +102,7 @@ class Title(models.Model):
 
 class GenreTitle(models.Model):
     """Связь жанра и тайтла"""
+
     genre = models.ForeignKey(
         Genre,
         verbose_name='Жанр',
