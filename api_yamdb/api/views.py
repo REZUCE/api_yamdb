@@ -28,15 +28,15 @@ class GenreViewSet(ModelMixinSet):
     lookup_field = 'slug'
 
 
-class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(
-        rating=Avg('reviews__score'),
-    ).all()
-    permission_classes = (IsAdminUserOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = FilterTitle
-
-    def get_serializer_class(self):
-        if self.action in ('list', 'retrieve'):
-            return TitleReadSerializer
-        return TitleWriteSerializer
+# class TitleViewSet(viewsets.ModelViewSet):
+#     queryset = Title.objects.annotate(
+#         rating=Avg('reviews__score'),
+#     ).all()
+#     permission_classes = (IsAdminUserOrReadOnly,)
+#     filter_backends = (DjangoFilterBackend,)
+#     filterset_class = FilterTitle
+#
+#     def get_serializer_class(self):
+#         if self.action in ('list', 'retrieve'):
+#             return TitleReadSerializer
+#         return TitleWriteSerializer
