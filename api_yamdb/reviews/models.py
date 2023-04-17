@@ -100,6 +100,7 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
+    """Связь жанра и тайтла"""
     genre = models.ForeignKey(
         Genre,
         verbose_name='Жанр',
