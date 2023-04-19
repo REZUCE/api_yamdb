@@ -1,11 +1,46 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from django.core.validators import RegexValidator
 from rest_framework import serializers
-
+from user.models import User
 from reviews.models import Category, Comments, Genre, Review, Title
 from reviews.validators import validate_title_year
 
 USERNAME_CHECK = r'^[\w.@+-]+$'  # Проверка имени на отсутствие спецсимволов
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор для пользователей."""
+    username = serializers.CharField(
+        max_length=150,
+        validators=[
+            RegexValidator(
+                regex=USERNAME_CHECK,
+                message="""Имя должно содержать, 
+                только буквы, цифры или же символ подчеркивания!"""
+            )
+        ]
+    )
+
+    class Meta:
+        fields = ('username', 'email',
+                  'first_name', 'last_name',
+                  'bio', 'role')
+
+
+class SignupSerializer(serializers.ModelSerializer):
+    """Сериализатор для регистрации пользователей."""
+
+    def validate_username(self, value):
+        if value == 'me':
+            raise serializers.ValidationError(
+                'me нельзя использовать в качестве имени',
+            )
+        return value
+
+    class Meta:
+        fields = ('username', 'email')
+        model = User
 
 
 class GenreSerializer(serializers.ModelSerializer):
