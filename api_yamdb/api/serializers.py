@@ -26,6 +26,26 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email',
                   'first_name', 'last_name',
                   'bio', 'role')
+        model = User
+
+
+class UsersMeSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        max_length=150,
+        validators=[
+            RegexValidator(
+                regex=USERNAME_CHECK,
+                message="""Имя должно содержать, 
+                только буквы, цифры или же символ подчеркивания!"""
+            )
+        ]
+    )
+    role = serializers.CharField(read_only=True)
+
+    class Meta:
+        fields = ('username', 'email',
+                  'first_name', 'last_name',
+                  'bio', 'role')
 
 
 class SignupSerializer(serializers.ModelSerializer):

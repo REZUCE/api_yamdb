@@ -14,7 +14,7 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated)
 from .serializers import (UserSerializer, CategorySerializer,
                           CommentsSerializer, GenreSerializer,
                           ReviewSerializer, TitleReadSerializer,
-                          TitleWriteSerializer)
+                          TitleWriteSerializer, UsersMeSerializer)
 from reviews.models import Category, Genre, Review, Title
 from rest_framework.views import APIView
 from user.models import User
@@ -28,7 +28,29 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     http_method_names = ('get', 'post', 'path',
                          'delete', 'put', 'patch')
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin, ]
+
+
+class UserMeViewSet(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+        try:
+            me = User.objects.get(username=request.user.username)
+        except User.DoesNotExists:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(me)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        try:
+            me = User.objects.get(username=request.user.username)
+        except User.DoesNotExists:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = UsersMeSerializer(me, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(ModelMixinSet):
