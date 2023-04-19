@@ -8,7 +8,7 @@ from api.filters import FilterTitle
 from api.mixins import ModelMixinSet
 from api.permissions import (IsAdminModeratorAuthorOrReadOnly,
                              IsAdminUserOrReadOnly,
-                             IsAdminOrStaff
+                             IsAdmin
                              )
 from rest_framework.permissions import (AllowAny, IsAuthenticated)
 from .serializers import (UserSerializer, CategorySerializer,
@@ -21,48 +21,14 @@ from user.models import User
 from api.utils import send_confirmation_code_to_email
 
 
-class UserViewSet(APIView):
+class UserViewSet(viewsets.ModelViewSet):
     """ViewSet для модели User"""
-    permission_classes = [IsAuthenticated, IsAdminOrStaff]
-
-    def get(self, request, username=None):
-        if username is None:
-            users_queryset = User.objects.all()
-            serializer = UserSerializer(users_queryset, many=True)
-            return Response(serializer.data)
-        else:
-
-            try:
-                user_queryset = User.objects.get(username=username)
-            except User.DoesNotExists:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-            serializer = UserSerializer(user_queryset)
-            return Response(serializer.data)
-
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_object(self, username):
-        try:
-            return User.objects.get(username=username)
-        except User.DoesNotExists:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def patch(self, request, username):
-        user = self.get_object(username)
-        serializer = UserSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            if 'username' in request.data:
-                user.username = request.data['username']
-                user.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response({'error': 'Можно обновлять только поле username'},
-                                status=status.HTTP_400_BAD_REQUEST)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'username'
+    http_method_names = ('get', 'post', 'path',
+                         'delete', 'put', 'patch')
+    permission_classes = [IsAuthenticated, IsAdmin]
 
 
 class CategoryViewSet(ModelMixinSet):
