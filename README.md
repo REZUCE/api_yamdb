@@ -1,2 +1,2 @@
-# api_yamdb
-api_yamdb
+# Алексей и Вова
+- README.md сделаем под конец.

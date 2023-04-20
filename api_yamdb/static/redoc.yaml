@@ -1086,7 +1086,7 @@ components:
       required:
       - name
       - slug
-    
+
     GenreRead:
       type: object
       properties:
