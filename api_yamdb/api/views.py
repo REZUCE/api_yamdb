@@ -8,13 +8,16 @@ from api.filters import FilterTitle
 from api.mixins import ModelMixinSet
 from api.permissions import (IsAdminModeratorAuthorOrReadOnly,
                              IsAdminUserOrReadOnly,
-                             IsAdmin
+                             IsAdmin,
+                             IsAdminModeratorAuthorOrReadOnly,
                              )
-from rest_framework.permissions import (AllowAny, IsAuthenticated)
+from rest_framework.permissions import (AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly)
 from .serializers import (UserSerializer, CategorySerializer,
                           CommentsSerializer, GenreSerializer,
                           ReviewSerializer, TitleReadSerializer,
-                          TitleWriteSerializer, UsersMeSerializer)
+                          TitleWriteSerializer, UsersMeSerializer,
+                          SignupSerializer,
+                          )
 from reviews.models import Category, Genre, Review, Title
 from rest_framework.views import APIView
 from user.models import User
@@ -51,6 +54,20 @@ class UserMeViewSet(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SignupView(APIView):
+    permission_classes = [AllowAny, ]
+
+    def post(self, request):
+        serializer = SignupSerializer(data=request.data)
+        if User.objects.filter(username=request.data.get('username'), email=request.data.get('email')):
+            send_confirmation_code_to_email(request)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        send_confirmation_code_to_email(request)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CategoryViewSet(ModelMixinSet):
@@ -91,7 +108,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Review"""
     serializer_class = ReviewSerializer
-    permission_classes = (IsAdminModeratorAuthorOrReadOnly,)
+    permission_classes = (IsAuthenticated,
+                          IsAdminModeratorAuthorOrReadOnly,)
 
     def get_queryset(self):
         title = get_object_or_404(
@@ -109,7 +127,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentsViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Comments"""
     serializer_class = CommentsSerializer
-    permission_classes = (IsAdminModeratorAuthorOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsAdminModeratorAuthorOrReadOnly,)
 
     def perform_create(self, serializer):
         review = get_object_or_404(

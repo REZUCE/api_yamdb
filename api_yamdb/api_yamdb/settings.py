@@ -125,3 +125,4 @@ EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 
 MIN_SCORE_VALUE = 1
 MAX_SCORE_VALUE = 10
+CONFIRMATION_CODE_LENGTH = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%&*'

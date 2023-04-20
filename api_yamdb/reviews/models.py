@@ -54,7 +54,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    """Модель тайтла."""
+    """Модель произведения."""
 
     name = models.CharField(
         max_length=256,
@@ -101,7 +101,7 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
-    """Связь жанра и тайтла."""
+    """Связь жанра и произведения."""
 
     title = models.ForeignKey(
         Title,

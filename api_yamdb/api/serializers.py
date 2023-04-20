@@ -29,27 +29,19 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
 
 
-class UsersMeSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
-        max_length=150,
-        validators=[
-            RegexValidator(
-                regex=USERNAME_CHECK,
-                message="""Имя должно содержать, 
-                только буквы, цифры или же символ подчеркивания!"""
-            )
-        ]
-    )
+class UsersMeSerializer(UserSerializer):
+
     role = serializers.CharField(read_only=True)
 
-    class Meta:
-        fields = ('username', 'email',
-                  'first_name', 'last_name',
-                  'bio', 'role')
 
 
 class SignupSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации пользователей."""
+    email = serializers.EmailField(max_length=254)
+
+    class Meta:
+        fields = ('username', 'email')
+        model = User
 
     def validate_username(self, value):
         if value == 'me':
@@ -57,10 +49,6 @@ class SignupSerializer(serializers.ModelSerializer):
                 'me нельзя использовать в качестве имени',
             )
         return value
-
-    class Meta:
-        fields = ('username', 'email')
-        model = User
 
 
 class GenreSerializer(serializers.ModelSerializer):

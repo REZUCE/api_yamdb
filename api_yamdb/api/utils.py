@@ -17,7 +17,7 @@ def send_confirmation_code_to_email(username):
     send_mail(
         'Код подтвержения для завершения регистрации',
         f'Ваш код для получения JWT токена {user.confirmation_code}',
-        settings.ADMIN_EMAIL,
+        # settings.ADMIN_EMAIL,
         (user.email,),
         fail_silently=False,
     )
