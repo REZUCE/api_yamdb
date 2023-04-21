@@ -31,6 +31,8 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     http_method_names = ('get', 'post', 'path',
                          'delete', 'patch')
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
     permission_classes = [IsAuthenticated, IsAdmin, ]
 
 
@@ -61,12 +63,14 @@ class SignupView(APIView):
 
     def post(self, request):
         serializer = SignupSerializer(data=request.data)
+        email = request.data.get('email')
         if User.objects.filter(
-                username=request.data.get('username'),
-                email=request.data.get('email')
+                email=email
         ).exists():
-            send_confirmation_code_to_email(request)
-            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                'Пользователь с таким адресом электронной почты уже существует',
+                status=status.HTTP_400_BAD_REQUEST
+            )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         send_confirmation_code_to_email(request)
@@ -111,7 +115,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Review"""
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthenticated, IsAdminModeratorAuthorOrReadOnly,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         title = get_object_or_404(
