@@ -31,6 +31,8 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     http_method_names = ('get', 'post', 'path',
                          'delete', 'patch')
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
     permission_classes = [IsAuthenticated, IsAdmin, ]
 
 
@@ -111,7 +113,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Review"""
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthenticated, IsAdminModeratorAuthorOrReadOnly,)
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         title = get_object_or_404(
