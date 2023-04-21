@@ -79,6 +79,7 @@ class Title(models.Model):
         Category,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name='titles',
         verbose_name='Категория',
         help_text='Укажите категорию',
@@ -105,6 +106,8 @@ class GenreTitle(models.Model):
 
     title = models.ForeignKey(
         Title,
+        null=True,
+        blank=True,
         on_delete=models.CASCADE,
         verbose_name='Произведение',
         help_text='Необходимо произведение',
@@ -112,6 +115,8 @@ class GenreTitle(models.Model):
 
     genre = models.ForeignKey(
         Genre,
+        null=True,
+        blank=True,
         on_delete=models.CASCADE,
         verbose_name='Жанр',
         help_text='Необходим жанр',
