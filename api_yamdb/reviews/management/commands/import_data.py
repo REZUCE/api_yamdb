@@ -4,20 +4,20 @@ from django.core.management.base import BaseCommand
 
 from api_yamdb.settings import BASE_DIR
 from reviews.models import Category, Comments, Genre, GenreTitle, Review, Title
-from users.models import CustomUser
+from user.models import User
 
 
 class Command(BaseCommand):
     help = 'Импорт данных из csv файлов'
 
     def ImportUser(self):
-        if CustomUser.objects.exists():
+        if User.objects.exists():
             print('Данные для User уже загружены')
         else:
             for row in DictReader(open(
                     BASE_DIR / 'static/data/users.csv',
                     encoding='utf8')):
-                CustomUser.objects.create(
+                User.objects.create(
                     id=row['id'],
                     username=row['username'],
                     email=row['email'],
@@ -91,7 +91,7 @@ class Command(BaseCommand):
                     id=row['id'],
                     title_id=row['title_id'],
                     text=row['text'],
-                    author=CustomUser.objects.get(id=row['author']),
+                    author=User.objects.get(id=row['author']),
                     score=row['score'],
                     pub_date=row['pub_date'])
             print('Данные для Review загружены')
@@ -107,7 +107,7 @@ class Command(BaseCommand):
                     id=row['id'],
                     review_id=row['review_id'],
                     text=row['text'],
-                    author=CustomUser.objects.get(id=row['author']),
+                    author=User.objects.get(id=row['author']),
                     pub_date=row['pub_date'])
             print('Данные для Comments загружены')
 

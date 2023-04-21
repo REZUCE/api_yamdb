@@ -30,9 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UsersMeSerializer(UserSerializer):
-
     role = serializers.CharField(read_only=True)
-
 
 
 class SignupSerializer(serializers.ModelSerializer):
