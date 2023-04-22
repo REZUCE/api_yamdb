@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.core.validators import RegexValidator
 from rest_framework import serializers
 from rest_framework.response import Response
+from rest_framework.validators import UniqueValidator
 from user.models import User
 from reviews.models import Category, Comments, Genre, Review, Title
 from reviews.validators import validate_title_year
@@ -14,13 +15,15 @@ class UserSerializer(serializers.ModelSerializer):
     """Сериализатор для пользователей."""
     username = serializers.CharField(
         max_length=150,
+
         validators=[
             RegexValidator(
                 regex=USERNAME_CHECK,
                 message="""Имя должно содержать, 
                 только буквы, цифры или же символ подчеркивания!"""
-            )
-        ]
+            ),
+            UniqueValidator(queryset=User.objects.all()),
+        ],
     )
 
     class Meta:
