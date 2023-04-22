@@ -2,6 +2,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.core.validators import RegexValidator
 from rest_framework import serializers
+from rest_framework.response import Response
 from user.models import User
 from reviews.models import Category, Comments, Genre, Review, Title
 from reviews.validators import validate_title_year
@@ -31,6 +32,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UsersMeSerializer(UserSerializer):
     role = serializers.CharField(read_only=True)
+
+
+class GetTokenSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150)
+    confirmation_code = serializers.CharField(max_length=20)
 
 
 class SignupSerializer(serializers.ModelSerializer):
