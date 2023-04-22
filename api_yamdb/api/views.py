@@ -72,10 +72,10 @@ class SignupView(APIView):
         #         'Пользователь с таким адресом электронной почты уже существует',
         #         status=status.HTTP_400_BAD_REQUEST
         #     )
-        if User.objects.filter(username=username).exists():
+        if User.objects.filter(username=username, email=email).exists():
             return Response(
-                'Пользователь с таким адресом электронной почты уже существует',
-                status=status.HTTP_400_BAD_REQUEST
+                'Пользователь с таким адресом электронной почты и именем уже существует',
+                status=status.HTTP_200_OK
             )
         if User.objects.filter(
                 email=email
@@ -84,6 +84,7 @@ class SignupView(APIView):
                 'Пользователь с таким адресом электронной почты уже существует',
                 status=status.HTTP_400_BAD_REQUEST
             )
+
 
         serializer.is_valid(raise_exception=True)
         serializer.save()
