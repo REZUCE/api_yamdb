@@ -12,11 +12,13 @@ from api.permissions import (IsAdminModeratorAuthorOrReadOnly,
                              IsAdminModeratorAuthorOrReadOnly,
                              )
 from rest_framework.permissions import (AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly)
+from rest_framework_simplejwt.tokens import AccessToken
+
 from .serializers import (UserSerializer, CategorySerializer,
                           CommentsSerializer, GenreSerializer,
                           ReviewSerializer, TitleReadSerializer,
                           TitleWriteSerializer, UsersMeSerializer,
-                          SignupSerializer,
+                          SignupSerializer, GetTokenSerializer,
                           )
 from reviews.models import Category, Genre, Review, Title
 from rest_framework.views import APIView
@@ -64,6 +66,17 @@ class SignupView(APIView):
     def post(self, request):
         serializer = SignupSerializer(data=request.data)
         email = request.data.get('email')
+        username = request.data.get('username')
+        # if User.objects.filter(username=self.request.get('username')):
+        #     return Response(
+        #         'Пользователь с таким адресом электронной почты уже существует',
+        #         status=status.HTTP_400_BAD_REQUEST
+        #     )
+        if User.objects.filter(username=username, email=email).exists():
+            return Response(
+                'Пользователь с таким адресом электронной почты и именем уже существует',
+                status=status.HTTP_200_OK
+            )
         if User.objects.filter(
                 email=email
         ).exists():
@@ -71,10 +84,29 @@ class SignupView(APIView):
                 'Пользователь с таким адресом электронной почты уже существует',
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
         serializer.is_valid(raise_exception=True)
         serializer.save()
         send_confirmation_code_to_email(request)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetTokenView(APIView):
+    permission_classes = [AllowAny, ]
+
+    def post(self, request):
+        if not request.POST:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if not request.data.get('username'):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        serializer = GetTokenSerializer(data=request.data)
+        user = get_object_or_404(User, username=request.data.get('username'))
+        if user.confirmation_code != request.data.get('confirmation_code'):
+            return Response('Неверный код доступа', status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        token = AccessToken.for_user(user)
+        return Response(token, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(ModelMixinSet):
@@ -128,6 +160,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             Title,
             id=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class CommentsViewSet(viewsets.ModelViewSet):
