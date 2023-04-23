@@ -85,7 +85,6 @@ class SignupView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-
         serializer.is_valid(raise_exception=True)
         serializer.save()
         send_confirmation_code_to_email(request)
@@ -96,17 +95,15 @@ class GetTokenView(APIView):
     permission_classes = [AllowAny, ]
 
     def post(self, request):
-        if not request.POST:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         if not request.data.get('username'):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response('Нет поля username', status=status.HTTP_400_BAD_REQUEST)
         serializer = GetTokenSerializer(data=request.data)
         user = get_object_or_404(User, username=request.data.get('username'))
         if user.confirmation_code != request.data.get('confirmation_code'):
             return Response('Неверный код доступа', status=status.HTTP_400_BAD_REQUEST)
         serializer.is_valid(raise_exception=True)
         token = AccessToken.for_user(user)
-        return Response(token, status=status.HTTP_200_OK)
+        return Response(str(token), status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(ModelMixinSet):
@@ -156,9 +153,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return title.reviews.all()
 
     def perform_create(self, serializer):
-        title = get_object_or_404(
-            Title,
-            id=self.kwargs.get('title_id'))
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        serializer.is_valid(raise_exception=True)
         serializer.save(author=self.request.user, title=title)
         return Response(status=status.HTTP_201_CREATED)
 

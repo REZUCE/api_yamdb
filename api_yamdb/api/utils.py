@@ -11,7 +11,7 @@ def send_confirmation_code_to_email(request):
     user = get_object_or_404(User, username=request.data.get('username'))
     confirmation_code = get_random_string(20, settings.CONFIRMATION_CODE_LENGTH)
 
-    user.confirmation_code = confirmation_code
+    user.confirmation_code = str(confirmation_code)
     user.save()
     send_mail(
         'Код подтвержения для завершения регистрации',

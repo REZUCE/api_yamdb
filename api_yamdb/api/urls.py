@@ -7,12 +7,20 @@ from .views import (CategoryViewSet, GenreViewSet,
                     GetTokenView, )
 
 router = DefaultRouter()
-router.register('users', UserViewSet, basename='users')
-router.register('categories', CategoryViewSet, basename='categories')
-router.register('genres', GenreViewSet, basename='genres')
-router.register('titles', TitleViewSet, basename='titles')
-router.register(r'titles/?P<title_id>\d+/reviews/', ReviewViewSet, basename='reviews')
-router.register(r'titles/?P<title_id>\d+/reviews/?P<title_id>\d+/', CommentsViewSet, basename='comments')
+router.register(r'users', UserViewSet, basename='users')
+router.register(r'categories', CategoryViewSet, basename='categories')
+router.register(r'genres', GenreViewSet, basename='genres')
+router.register(r'titles', TitleViewSet, basename='titles')
+router.register(
+    r'titles/(?P<title_id>\d+)/reviews',
+    ReviewViewSet,
+    basename='reviews'
+)
+router.register(
+    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
+    CommentsViewSet,
+    basename='comments'
+)
 urlpatterns = [
     path('v1/auth/token/', GetTokenView.as_view(), name='get_token'),
     path('v1/auth/signup/', SignupView.as_view(), name='signup'),
