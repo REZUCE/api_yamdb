@@ -154,7 +154,7 @@ class Review(models.Model):
         error_messages={
             'validators': (
                 f'Оценка должна быть от {settings.MIN_SCORE_VALUE}'
-                f'до {settings.MAX_SCORE_VALUE}!'
+                f' до {settings.MAX_SCORE_VALUE}!'
             ),
         },
         verbose_name='Оценка произведения',
