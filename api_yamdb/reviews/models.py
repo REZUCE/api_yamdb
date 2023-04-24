@@ -148,15 +148,11 @@ class Review(models.Model):
     )
     score = models.IntegerField(
         validators=(
-            MinValueValidator(settings.MIN_SCORE_VALUE),
-            MaxValueValidator(settings.MAX_SCORE_VALUE),
+            MinValueValidator(settings.MIN_SCORE_VALUE,
+                              message='Оценка меньше допустимой',),
+            MaxValueValidator(settings.MAX_SCORE_VALUE,
+                              message='Оценка больше допустимой',),
         ),
-        error_messages={
-            'validators': (
-                f'Оценка должна быть от {settings.MIN_SCORE_VALUE}'
-                f' до {settings.MAX_SCORE_VALUE}!'
-            ),
-        },
         verbose_name='Оценка произведения',
         help_text='Укажите оценку произведения',
     )
@@ -167,13 +163,14 @@ class Review(models.Model):
     )
 
     class Meta:
-        ordering = ('pub_date',)
+
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+        ordering = ('-pub_date',)
         constraints = (
             models.UniqueConstraint(
                 fields=('author', 'title'),
-                name='unique reviews',
+                name='unique_review',
             ),
         )
 

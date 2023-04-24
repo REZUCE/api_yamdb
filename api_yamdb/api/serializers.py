@@ -4,6 +4,7 @@ from django.core.validators import RegexValidator
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.tokens import AccessToken
 from user.models import User
 from reviews.models import Category, Comments, Genre, Review, Title
 from reviews.validators import validate_title_year
@@ -40,7 +41,11 @@ class UsersMeSerializer(UserSerializer):
 class GetTokenSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
     confirmation_code = serializers.CharField(max_length=20)
-
+    # def validate(self, data):
+    #     user = get_object_or_404(User, username=data.get('username'))
+    #     if user.confirmation_code != data.get('confirmation_code'):
+    #         raise serializers.ValidationError('Не верный confirmation_code')
+    #     return {'access': str(AccessToken.for_user(user))}
 
 class SignupSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации пользователей."""
@@ -115,7 +120,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     def validate_score(self, value):
-        if settings.MIN_SCORE_VALUE <= value <= settings.MAX_SCORE_VALUE:
+        if not settings.MIN_SCORE_VALUE <= value <= settings.MAX_SCORE_VALUE:
             raise serializers.ValidationError(
                 f'Оценка должна быть от {settings.MIN_SCORE_VALUE}'
                 f'до {settings.MAX_SCORE_VALUE}!',

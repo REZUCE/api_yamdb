@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets, status
+from rest_framework import filters, viewsets, status, generics
 from rest_framework.response import Response
 from api.filters import FilterTitle
 from api.mixins import ModelMixinSet
@@ -13,6 +13,7 @@ from api.permissions import (IsAdminModeratorAuthorOrReadOnly,
                              )
 from rest_framework.permissions import (AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly)
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import (UserSerializer, CategorySerializer,
                           CommentsSerializer, GenreSerializer,
@@ -91,7 +92,9 @@ class SignupView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class GetTokenView(APIView):
+class GetTokenView(TokenObtainPairView):
+    # serializer_class = GetTokenSerializer
+
     permission_classes = [AllowAny, ]
 
     def post(self, request):
@@ -144,7 +147,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Review"""
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+        IsAdminModeratorAuthorOrReadOnly,
+    )
 
     def get_queryset(self):
         title = get_object_or_404(
@@ -157,6 +163,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(author=self.request.user, title=title)
         return Response(status=status.HTTP_201_CREATED)
+
+
 
 
 class CommentsViewSet(viewsets.ModelViewSet):
