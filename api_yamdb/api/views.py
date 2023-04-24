@@ -165,8 +165,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_201_CREATED)
 
 
-class testviewsset(viewsets.ModelViewSet):
-    pass
 
 
 class CommentsViewSet(viewsets.ModelViewSet):
