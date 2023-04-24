@@ -4,7 +4,7 @@ from .views import (CategoryViewSet, GenreViewSet,
                     TitleViewSet, UserViewSet,
                     UserMeViewSet, SignupView,
                     ReviewViewSet, CommentsViewSet,
-                    GetTokenView, )
+                    GetTokenView, testviewsset,)
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
@@ -14,13 +14,14 @@ router.register(r'titles', TitleViewSet, basename='titles')
 router.register(
     r'titles/(?P<title_id>\d+)/reviews',
     ReviewViewSet,
-    basename='reviews'
+    basename='titles_reviews'
 )
 router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
     CommentsViewSet,
-    basename='comments'
+    basename='reviews_comments'
 )
+router.register('test', testviewsset, basename='test')
 urlpatterns = [
     path('v1/auth/token/', GetTokenView.as_view(), name='get_token'),
     path('v1/auth/signup/', SignupView.as_view(), name='signup'),
