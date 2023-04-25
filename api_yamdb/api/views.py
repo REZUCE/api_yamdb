@@ -1,8 +1,7 @@
-from django.conf import settings
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets, status, generics
+from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
 from api.filters import FilterTitle
 from api.mixins import ModelMixinSet
@@ -11,7 +10,8 @@ from api.permissions import (IsAdminModeratorAuthorOrReadOnly,
                              IsAdmin,
                              IsAdminModeratorAuthorOrReadOnly,
                              )
-from rest_framework.permissions import (AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly, )
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -68,21 +68,18 @@ class SignupView(APIView):
         serializer = SignupSerializer(data=request.data)
         email = request.data.get('email')
         username = request.data.get('username')
-        # if User.objects.filter(username=self.request.get('username')):
-        #     return Response(
-        #         'Пользователь с таким адресом электронной почты уже существует',
-        #         status=status.HTTP_400_BAD_REQUEST
-        #     )
         if User.objects.filter(username=username, email=email).exists():
             return Response(
-                'Пользователь с таким адресом электронной почты и именем уже существует',
+                'Пользователь с таким адресом электронной '
+                'почты и именем уже существует',
                 status=status.HTTP_200_OK
             )
         if User.objects.filter(
                 email=email
         ).exists():
             return Response(
-                'Пользователь с таким адресом электронной почты уже существует',
+                'Пользователь с таким адресом электронной '
+                'почты уже существует',
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -99,11 +96,17 @@ class GetTokenView(TokenObtainPairView):
 
     def post(self, request):
         if not request.data.get('username'):
-            return Response('Нет поля username', status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                'Нет поля username',
+                status=status.HTTP_400_BAD_REQUEST
+            )
         serializer = GetTokenSerializer(data=request.data)
         user = get_object_or_404(User, username=request.data.get('username'))
         if user.confirmation_code != request.data.get('confirmation_code'):
-            return Response('Неверный код доступа', status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                'Неверный код доступа',
+                status=status.HTTP_400_BAD_REQUEST
+            )
         serializer.is_valid(raise_exception=True)
         token = AccessToken.for_user(user)
         return Response(str(token), status=status.HTTP_200_OK)
@@ -163,8 +166,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(author=self.request.user, title=title)
         return Response(status=status.HTTP_201_CREATED)
-
-
 
 
 class CommentsViewSet(viewsets.ModelViewSet):
