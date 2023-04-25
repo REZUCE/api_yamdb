@@ -16,7 +16,9 @@ class UserSerializer(serializers.ModelSerializer):
         validators=[
             RegexValidator(
                 regex=USERNAME_CHECK,
-                message="""Имя должно содержать,только буквы, цифры или же символ подчеркивания!"""),
+                message="""Имя должно содержать,только 
+                буквы,
+                цифры или же символ подчеркивания!"""),
             UniqueValidator(queryset=User.objects.all()),
         ],
     )
