@@ -28,3 +28,4 @@ class IsAdminModeratorAuthorOrReadOnly(permissions.BasePermission):
                 or obj.author == request.user
             )
         )
+
