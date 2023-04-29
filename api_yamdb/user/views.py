@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from api.permissions import (IsAdminModeratorAuthorOrReadOnly,
                              IsAdminUserOrReadOnly,
                              IsAdmin,
@@ -31,6 +32,25 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     permission_classes = [IsAuthenticated, IsAdmin, ]
+
+    @action(
+        methods=['get', 'patch'],
+        detail=False,
+        url_path='users/me',
+        permission_classes=[IsAuthenticated, ]
+    )
+    def me(self, request):
+        if request.method == 'GET':
+            me = request.user
+            serializer = UserSerializer(me)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        elif request.method == 'PATCH':
+            me = request.user
+            serializer = UsersMeSerializer(me, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserMeViewSet(APIView):
@@ -78,23 +98,20 @@ class SignupView(APIView):
 
 
 class GetTokenView(TokenObtainPairView):
-    # serializer_class = GetTokenSerializer
-
-    permission_classes = [AllowAny, ]
+    serializer_class = GetTokenSerializer
+    permission_classes = [AllowAny]
 
     def post(self, request):
-        if not request.data.get('username'):
-            return Response(
-                'Нет поля username',
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        serializer = GetTokenSerializer(data=request.data)
-        user = get_object_or_404(User, username=request.data.get('username'))
-        if user.confirmation_code != request.data.get('confirmation_code'):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data['username']
+        confirmation_code = serializer.validated_data['confirmation_code']
+
+        user = get_object_or_404(User, username=username)
+        if user.confirmation_code != confirmation_code:
             return Response(
                 'Неверный код доступа',
                 status=status.HTTP_400_BAD_REQUEST
             )
-        serializer.is_valid(raise_exception=True)
         token = AccessToken.for_user(user)
         return Response(str(token), status=status.HTTP_200_OK)
