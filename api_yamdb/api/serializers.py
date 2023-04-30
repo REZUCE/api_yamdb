@@ -71,14 +71,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        request = self.context['request']
-        author = request.user
+        author = self.context['request'].user
         title_id = self.context.get('view').kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
-        if (
-                request.method == 'POST'
-                and Review.objects.filter(title=title, author=author).exists()
-        ):
+        if self.instance is None and Review.objects.filter(title=title, author=author).exists():
             raise serializers.ValidationError(
                 'Может существовать только один отзыв!',
             )
@@ -87,7 +83,6 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Review
-
 
 class CommentsSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
