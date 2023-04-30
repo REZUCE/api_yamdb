@@ -7,11 +7,9 @@ from api.filters import FilterTitle
 from api.mixins import ModelMixinSet
 from api.permissions import (IsAdminModeratorAuthorOrReadOnly,
                              IsAdminUserOrReadOnly,
-                             IsAdmin,
                              IsAdminModeratorAuthorOrReadOnly,
                              )
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly, )
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .serializers import (CategorySerializer,
                           CommentsSerializer, GenreSerializer,
@@ -92,6 +90,7 @@ class CommentsViewSet(viewsets.ModelViewSet):
             id=self.kwargs.get('review_id'),
             title__id=self.kwargs.get('title_id'),
         )
+
     def perform_create(self, serializer):
         review = self.review_get_or_404()
         serializer.save(author=self.request.user, review=review)

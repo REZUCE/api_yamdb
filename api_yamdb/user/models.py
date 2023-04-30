@@ -39,8 +39,7 @@ class User(AbstractUser):
     def is_admin(self):
         return (
             self.role == USER_TYPE_CHOICES[1][0]
-            or (self.is_staff
-            and self.is_superuser)
+            or (self.is_staff and self.is_superuser)
         )
 
     @property

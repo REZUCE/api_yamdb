@@ -6,7 +6,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 
-USERNAME_CHECK = r'^[\w.@+-]+$'  # Проверка имени на отсутствие спецсимволов
+USERNAME_CHECK = r'^[\w.@+-]+$'
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -47,7 +47,8 @@ class GetTokenSerializer(serializers.Serializer):
         try:
             user = get_object_or_404(User, username=username)
         except User.DoesNotExist:
-            raise serializers.ValidationError('Пользователь с таким именем не найден')
+            raise serializers.ValidationError(
+                'Пользователь с таким именем не найден')
 
         if user.username != username:
             return Response(

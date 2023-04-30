@@ -2,13 +2,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from api.permissions import (IsAdminModeratorAuthorOrReadOnly,
-                             IsAdminUserOrReadOnly,
-                             IsAdmin,
-                             IsAdminModeratorAuthorOrReadOnly,
-                             )
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly, )
+from api.permissions import IsAdmin
+
+from rest_framework.permissions import (AllowAny, IsAuthenticated, )
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
