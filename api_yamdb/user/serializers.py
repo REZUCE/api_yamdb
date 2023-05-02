@@ -1,17 +1,19 @@
+from django.conf import settings
 from django.core.validators import RegexValidator
-from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
-from .models import User
-from rest_framework import status
 from django.shortcuts import get_object_or_404
+from rest_framework import serializers
+from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.validators import UniqueValidator
+
+from .models import User
 
 USERNAME_CHECK = r'^[\w.@+-]+$'
 
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
-        max_length=150,
+        max_length=settings.LENGTH_USERNAME,
         validators=[
             RegexValidator(
                 regex=USERNAME_CHECK,
@@ -34,8 +36,10 @@ class UsersMeSerializer(UserSerializer):
 
 
 class GetTokenSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
-    confirmation_code = serializers.CharField(max_length=20)
+    username = serializers.CharField(max_length=settings.LENGTH_USERNAME)
+    confirmation_code = serializers.CharField(
+        max_length=settings.CONFIRMATION_CODE_LENGTH
+    )
 
     def validate(self, data):
         username = data.get('username')
@@ -64,7 +68,7 @@ class GetTokenSerializer(serializers.Serializer):
 
 class SignupSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации пользователей."""
-    email = serializers.EmailField(max_length=254)
+    email = serializers.EmailField(max_length=settings.LENGTH_EMAIL)
 
     class Meta:
         fields = ('username', 'email')

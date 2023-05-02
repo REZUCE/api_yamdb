@@ -1,21 +1,21 @@
+from api.permissions import IsAdmin
+from api.utils import send_confirmation_code_to_email
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, viewsets, status
-from rest_framework.response import Response
 from rest_framework.decorators import action
-from api.permissions import IsAdmin
-
 from rest_framework.permissions import (AllowAny, IsAuthenticated, )
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-from .serializers import (UserSerializer,
-                          GetTokenSerializer,
-                          UsersMeSerializer,
-                          SignupSerializer,
-                          )
-from rest_framework.views import APIView
 from user.models import User
-from api.utils import send_confirmation_code_to_email
+
+from .serializers import (
+    UserSerializer,
+    GetTokenSerializer,
+    UsersMeSerializer,
+    SignupSerializer,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -32,37 +32,20 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(
         methods=['get', 'patch'],
         detail=False,
-        url_path='users/me',
         permission_classes=[IsAuthenticated, ]
     )
     def me(self, request):
         if request.method == 'GET':
-            me = request.user
-            serializer = UserSerializer(me)
+            serializer = UserSerializer(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         elif request.method == 'PATCH':
-            me = request.user
-            serializer = UsersMeSerializer(me, data=request.data, partial=True)
+            serializer = UsersMeSerializer(request.user,
+                                           data=request.data,
+                                           partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class UserMeViewSet(APIView):
-    permission_classes = [IsAuthenticated, ]
-
-    def get(self, request):
-        me = request.user
-        serializer = UserSerializer(me)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def patch(self, request):
-        me = request.user
-        serializer = UsersMeSerializer(me, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SignupView(APIView):

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -15,7 +16,7 @@ class User(AbstractUser):
     )
     email = models.EmailField(
         verbose_name='Почта',
-        max_length=254,
+        max_length=settings.LENGTH_EMAIL,
         unique=True,
     )
     role = models.CharField(
@@ -25,7 +26,7 @@ class User(AbstractUser):
         default=USER_TYPE_CHOICES[0][0]
     )
     confirmation_code = models.CharField(
-        max_length=20,
+        max_length=settings.CONFIRMATION_CODE_LENGTH,
         blank=True,
         verbose_name='Код доступа',
     )

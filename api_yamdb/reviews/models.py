@@ -9,12 +9,12 @@ class Category(models.Model):
     """Модель категории."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=settings.LENGTH_CHAR,
         verbose_name='Название',
         help_text='Необходимо названия котегории',
     )
     slug = models.SlugField(
-        max_length=50,
+        max_length=settings.LENGTH_SLUG,
         unique=True,
         verbose_name='Индификатор',
         help_text='Необходим индификатор категории',
@@ -38,7 +38,7 @@ class Genre(models.Model):
         help_text='Необходимо названия жанра',
     )
     slug = models.SlugField(
-        max_length=50,
+        max_length=settings.LENGTH_SLUG,
         unique=True,
         verbose_name='Идентификатор',
         help_text='Необходим индификатор жанра',
