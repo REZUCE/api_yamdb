@@ -61,7 +61,8 @@ class SignupView(APIView):
             serializer.is_valid(raise_exception=True)
             if serializer.validated_data['email'] != user.email:
                 return Response(
-                    'Почта указана неверно!', status=status.HTTP_400_BAD_REQUEST
+                    'Почта указана неверно!',
+                    status=status.HTTP_400_BAD_REQUEST
                 )
             serializer.save(raise_exception=True)
             send_confirmation_code_to_email(request)
@@ -82,8 +83,8 @@ class SignupView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(
             (
-                f'Использование имени пользователя '
-                f'admin запрещено!'
+                'Использование имени пользователя '
+                'admin запрещено!'
             ),
             status=status.HTTP_400_BAD_REQUEST
         )
