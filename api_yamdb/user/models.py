@@ -48,4 +48,5 @@ class User(AbstractUser):
         return (
             self.role == USER_TYPE_CHOICES[2][0]
             or self.is_staff
+            or self.is_admin
         )

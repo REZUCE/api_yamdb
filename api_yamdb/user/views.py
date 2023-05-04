@@ -52,28 +52,41 @@ class SignupView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = SignupSerializer(data=request.data)
-        email = request.data.get('email')
         username = request.data.get('username')
-        if User.objects.filter(username=username, email=email).exists():
-            return Response(
-                'Пользователь с таким адресом электронной '
-                'почты и именем уже существует',
-                status=status.HTTP_200_OK
+        if User.objects.filter(username=username).exists():
+            user = get_object_or_404(User, username=username)
+            serializer = SignupSerializer(
+                user, data=request.data, partial=True
             )
+            serializer.is_valid(raise_exception=True)
+            if serializer.validated_data['email'] != user.email:
+                return Response(
+                    'Почта указана неверно!', status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer.save(raise_exception=True)
+            send_confirmation_code_to_email(request)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = SignupSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         if User.objects.filter(
-                email=email
+                email=serializer.validated_data['email']
         ).exists():
             return Response(
                 'Пользователь с таким адресом электронной '
                 'почты уже существует',
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        send_confirmation_code_to_email(request)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if serializer.validated_data['username'] != 'admin':
+            serializer.save()
+            send_confirmation_code_to_email(request)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            (
+                f'Использование имени пользователя '
+                f'admin запрещено!'
+            ),
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class GetTokenView(TokenObtainPairView):
