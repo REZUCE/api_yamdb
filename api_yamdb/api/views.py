@@ -20,7 +20,7 @@ from reviews.models import Category, Genre, Review, Title
 
 
 class CategoryViewSet(ModelMixinSet):
-    """Category для модели User"""
+    """ViewSet для модели Category"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminUserOrReadOnly,)
@@ -30,7 +30,7 @@ class CategoryViewSet(ModelMixinSet):
 
 
 class GenreViewSet(ModelMixinSet):
-    """Genre для модели User"""
+    """ViewSet для модели Genre"""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminUserOrReadOnly,)
