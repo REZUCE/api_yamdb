@@ -18,6 +18,7 @@
 - Python 3.10
 - Django 3.2
 - Djangorestframework 3.12.4
+- PyJWT 2.1.0
 
 ## Запуск проекта в dev-режиме
 
