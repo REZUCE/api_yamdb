@@ -61,8 +61,21 @@
     ```bash
         pip install -r requirements.txt
     ```
+    
+5. В папке с файлом manage.py выполните миграции:
+   windows
 
-5. В папке с файлом manage.py выполните команду:
+    ```bash
+        python manage.py migrate
+    ```
+
+    linux
+   
+    ```bash
+        python3 manage.py migrate
+    ```
+    
+6. В папке с файлом manage.py выполните команду:
 
     windows
 
